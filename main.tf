@@ -108,7 +108,8 @@ resource "azurerm_network_interface_security_group_association" "yj-nic-nsg-asso
 
 # Create a virtual machine
 resource "azurerm_linux_virtual_machine" "yj-vm" {
-  name                = "yj-vm"
+  vm_count            = var.vm_count
+  name                = "yj-vm-${var.vm_count}"
   resource_group_name = azurerm_resource_group.yj-rg.name
   location            = azurerm_resource_group.yj-rg.location
   size                = "Standard_B1s"
@@ -118,8 +119,8 @@ resource "azurerm_linux_virtual_machine" "yj-vm" {
   ]
 
   admin_ssh_key {
-    username   = "adminuser"
-    public_key = file("~/.ssh/adminuser_rsa.pub")
+    username   = var.admin_username
+    public_key = file(var.public_key_path)
   }
 
 
