@@ -44,7 +44,8 @@ resource "azurerm_subnet" "yj-subnet" {
 
 # Create a public IP address
 resource "azurerm_public_ip" "yj-public-ip" {
-  name                = "yj-public-ip"
+  count               = var.vm_count
+  name                = "yj-public-ip-${count.index}"
   location            = azurerm_resource_group.yj-rg.location
   resource_group_name = azurerm_resource_group.yj-rg.name
   allocation_method   = "Dynamic"
@@ -56,7 +57,8 @@ resource "azurerm_public_ip" "yj-public-ip" {
 
 # Create a network interface
 resource "azurerm_network_interface" "yj-nic" {
-  name                = "yj-nic"
+  count               = var.vm_count
+  name                = "yj-nic-${count.index}"
   location            = azurerm_resource_group.yj-rg.location
   resource_group_name = azurerm_resource_group.yj-rg.name
 
@@ -64,7 +66,7 @@ resource "azurerm_network_interface" "yj-nic" {
     name                          = "internal"
     subnet_id                     = azurerm_subnet.yj-subnet.id
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = azurerm_public_ip.yj-public-ip.id
+    public_ip_address_id          = azurerm_public_ip.yj-public-ip[count.index].id
   }
 
 
@@ -99,23 +101,39 @@ resource "azurerm_network_security_rule" "yj-ssh-rule" {
   network_security_group_name = azurerm_network_security_group.yj-nsg.name
 }
 
+# Create a security rule to allow HTTP access
+resource "azurerm_network_security_rule" "yj-http-rule" {
+  name                        = "AllowHTTP"
+  priority                    = 1002
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = "80"
+  source_address_prefix       = "*"
+  destination_address_prefix  = "*"
+  resource_group_name         = azurerm_resource_group.yj-rg.name
+  network_security_group_name = azurerm_network_security_group.yj-nsg.name
+}
+
 
 # Associate the network security group with the network interface
 resource "azurerm_network_interface_security_group_association" "yj-nic-nsg-association" {
-  network_interface_id      = azurerm_network_interface.yj-nic.id
+  count                     = var.vm_count
+  network_interface_id      = azurerm_network_interface.yj-nic[count.index].id
   network_security_group_id = azurerm_network_security_group.yj-nsg.id
 }
 
 # Create a virtual machine
 resource "azurerm_linux_virtual_machine" "yj-vm" {
-  vm_count            = var.vm_count
-  name                = "yj-vm-${var.vm_count}"
+  count               = var.vm_count
+  name                = "yj-vm-${count.index}"
   resource_group_name = azurerm_resource_group.yj-rg.name
   location            = azurerm_resource_group.yj-rg.location
   size                = "Standard_B1s"
   admin_username      = "adminuser"
   network_interface_ids = [
-    azurerm_network_interface.yj-nic.id,
+    azurerm_network_interface.yj-nic[count.index].id,
   ]
 
   admin_ssh_key {

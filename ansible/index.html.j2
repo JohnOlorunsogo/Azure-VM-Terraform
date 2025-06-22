@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ s_name }}</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        header {
+            background-color: #007BFF;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+
+        main {
+            padding: 20px;
+            text-align: center;
+        }
+
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1 id="main-heading">{{ s_name }}</h1>
+    </header>
+
+    <main>
+        <section>
+            <p>Welcome to {{ s_name }}! This is a simple modern web page.</p>
+            <button id="click-me">Click Me!</button>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 {{ s_name }}</p>
+    </footer>
+
+    <script>
+        // JavaScript for interactivity
+        document.getElementById('click-me').addEventListener('click', function () {
+            alert('Button clicked! Welcome to {{ s_name }}.');
+        });
+    </script>
+</body>
+
+</html>
